@@ -35,12 +35,31 @@ class Player:
         self.name = name
         self.hand = []
 
+    #Draw cards from the top of the deck
+    def draw_card(self, deck):
+        card = deck.pop()
+        self.hand.append(card)
+        return card
+
 class DiscardPile:
+    #Creates a list to store discarded cards
     def __init__(self):
         self.pile = []
-
+    #Adds to the discarded pile
     def add_to_pile(self, card):
         self.pile.append(card)
+
+
+#Will expand on this later on when adding the rules n mechs to the game
+class UnoMain:
+    def __init__(self, players):
+        self.players = players
+        self.deck = Deck()
+        self.discard_pile = DiscardPile()
+        self.current_player = 0
+        self.direction = 1
+
+        
 
 # Create a list of players
 players = [Player("Player 1"), Player("Player 2"), Player("Player 3"), Player("Player 4")]
@@ -50,6 +69,11 @@ deck = Deck.create_deck()
 
 debug = True
 if debug:
+
+    #To Test discard pile and print the player hand whose card has been discarded 
+    #'0' is player 1, '1' is player 2 and so on. Default is '0'.
+    choose_player = 0
+
     print(deck) #prints created deck
 
     print()
@@ -77,18 +101,18 @@ if debug:
     discard_pile = DiscardPile()
 
     # Example test of the discard pile
-    discarded_card = players[0].hand.pop()
+    discarded_card = players[choose_player].hand.pop()
     discard_pile.add_to_pile(discarded_card)
 
-    print(f'{players[0].name} discarded {discarded_card}')
+    print(f'{players[choose_player].name} discarded {discarded_card}')
     print(f'Discard pile: {discard_pile.pile}')
 
     print()
     print()
 
     # Print the chosen player's hand
-    print(f'{players[0].name} has the following cards:')
-    for card in players[0].hand:
+    print(f'{players[choose_player].name} has the following cards:')
+    for card in players[choose_player].hand:
         print(f'\t{card}')
     print()
     
@@ -104,9 +128,9 @@ else:
 
 
 
-
-
-
+#Everything so messy.. 
+#I need clean more
+#Later i also forget what i'm reading LOL
 
 
 
