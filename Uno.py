@@ -1,4 +1,5 @@
 import random
+import time
 import numpy as np
 
 # Create an array of card values and colors
@@ -7,7 +8,6 @@ cardColors = ['Red', 'Yellow', 'Green', 'Blue']
 
 class Deck:
     # makes a deck of cards
-    @staticmethod
     def create_deck():
         deck = []
         for i in cardColors:
@@ -15,14 +15,13 @@ class Deck:
                 deck.append((j,i))
         return deck
 
+
     # Create a function to shuffle the cards
-    @staticmethod
     def shuffle_deck(deck):
         random.shuffle(deck)
         return deck
 
     # Create a function to deal n number of cards to n number players
-    @staticmethod
     def deal_cards(deck, players):
         numOfPlayers = len(players)
         numOfCards = 7
@@ -67,24 +66,102 @@ players = [Player("Player 1"), Player("Player 2"), Player("Player 3"), Player("P
 # Create a deck of cards
 deck = Deck.create_deck()
 
+class TestChecks:
+    @staticmethod
+    def run_tests():
+        print("Test Starting...")
+        time.sleep(2)#Make ccool pause before everyhting shows pass!! yay!
+
+        print("Testing create_deck funtion:")
+        if TestChecks.test_deck_create_deck():
+            print("\tPASSED")
+        else:
+            print("\tFAILED")
+            print(deck)
+        
+        print("Testing shuffle_deck function:")
+        if TestChecks.test_deck_shuffle_deck():
+            print("\tPASSED")
+        else:
+            print("\tFAILED")
+            print(Deck.shuffle_deck(deck))
+
+        print("Testing deal_cards function:")
+        if TestChecks.test_deck_deal_cards():
+            print("\tPASSED")
+        else:
+            print("\tFAILED")
+
+        print("Testing draw_card function:")
+        if TestChecks.test_discard_pile():
+            print("\tPASSED")
+        else:
+            print("\tFAILED")
+
+        
+
+    @staticmethod
+    def test_deck_create_deck():
+        deck = Deck.create_deck()
+        if len(deck) == len(cardVal)*len(cardColors):
+            if ("0", "Red") in deck and ("Wild Draw Four", "Blue") in deck:
+                return True
+        return False
+
+
+    @staticmethod
+    def test_deck_shuffle_deck():
+        deck_shuffled = Deck.shuffle_deck(deck)
+        if deck != deck_shuffled:
+            return False
+        return True
+
+    @staticmethod
+    def test_deck_deal_cards():
+        deck = Deck.create_deck()
+        players = [Player("Player 1"), Player("Player 2")]
+        dealt_players = Deck.deal_cards(deck, players)
+        for player in dealt_players:
+            if len(player.hand) != 7:
+                return False
+        return True
+
+    @staticmethod
+    def test_discard_pile():
+        discard_pile = DiscardPile()
+        discard_pile.add_to_pile(("0", "Red"))
+        if len(discard_pile.pile) == 1:
+            if discard_pile.pile[0] == ("0", "Red"):
+                return True
+        return False
+
+#Debug usually set to 'False' but is set to 'True' for testing purposes~
 debug = True
 if debug:
+    
+    TestChecks.run_tests()
+    print("Tests finished.")
+    print("\n\n")
+    print("\n\n")
+
+    time.sleep(2)
 
     #To Test discard pile and print the player hand whose card has been discarded 
     #'0' is player 1, '1' is player 2 and so on. Default is '0'.
     choose_player = 0
 
+    deck = Deck.create_deck()
+    
     print(deck) #prints created deck
 
-    print()
-    print()
+    print("\n\n")
 
     # Shuffle the deck of cards
     Deck.shuffle_deck(deck)
     print(Deck.shuffle_deck(deck)) #prints shuffled deck
 
-    print()
-    print()
+    print("\n\n")
+
     # Deal cards to players
     players = Deck.deal_cards(deck, players)
 
@@ -95,8 +172,7 @@ if debug:
             print(f'\t{card}')
         print()
 
-    print()
-    print()
+    print("\n\n")
 
     discard_pile = DiscardPile()
 
@@ -107,14 +183,14 @@ if debug:
     print(f'{players[choose_player].name} discarded {discarded_card}')
     print(f'Discard pile: {discard_pile.pile}')
 
-    print()
-    print()
+    print("\n\n")
 
     # Print the chosen player's hand
     print(f'{players[choose_player].name} has the following cards:')
     for card in players[choose_player].hand:
         print(f'\t{card}')
-    print()
+
+    print("\n\n")
     
 
 else:
