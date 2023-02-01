@@ -8,6 +8,7 @@ cardColors = ['Red', 'Yellow', 'Green', 'Blue']
 
 class Deck:
     # makes a deck of cards
+    @staticmethod
     def create_deck():
         deck = []
         for i in cardColors:
@@ -17,11 +18,13 @@ class Deck:
 
 
     # Create a function to shuffle the cards
+    @staticmethod
     def shuffle_deck(deck):
         random.shuffle(deck)
         return deck
 
     # Create a function to deal n number of cards to n number players
+    @staticmethod
     def deal_cards(deck, players):
         numOfPlayers = len(players)
         numOfCards = 7
