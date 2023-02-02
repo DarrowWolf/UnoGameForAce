@@ -59,7 +59,7 @@ class UnoMain:
         self.deck = Deck()
         self.discard_pile = DiscardPile()
         self.current_player = 0
-        self.direction = 1
+        self.direction = 1 
         self.skip = False
         self.draw_count = 0 #will change this so i'll draw out directly from deck, but this makes it easier to test
         self.choose_color = None
@@ -80,7 +80,20 @@ class UnoMain:
             self.direction *= -1
         elif card[0] == "Draw Two":
             self.draw_count = 2
-        #I'll complete later, going out
+        elif card[0] in ["Wild", "Wild Draw Four"]:
+            self.choose_color(player)
+        player.hand.remove(card)
+        if self.draw_count:
+            next_player = self.players[(self.players.index(player) + self.direction) % len(self.players)]
+            next_player.draw_card(self.deck)
+            next_player.draw_card(self.deck)
+            self.draw_count -= 1
+        if self.skip:
+            self.skip = False
+        else:
+            self.current_player = (self.players.index(player) + self.direction) % len(self.players)
+
+
 
 # Create a list of players
 players = [Player("Player 1"), Player("Player 2"), Player("Player 3"), Player("Player 4")]
@@ -116,6 +129,12 @@ class TestChecks:
 
         print("Testing draw_card function:")
         if TestChecks.test_discard_pile():
+            print("\tPASSED")
+        else:
+            print("\tFAILED")
+
+        print("Testing direction is set to 1:")
+        if TestChecks.test_uno_main_direction():
             print("\tPASSED")
         else:
             print("\tFAILED")
@@ -156,6 +175,14 @@ class TestChecks:
             if discard_pile.pile[0] == ("0", "Red"):
                 return True
         return False
+
+    @staticmethod
+    def test_uno_main_direction():
+        uno_game = UnoMain(players)
+        if uno_game.direction == 1:
+            return True
+        return False
+
 
 #Debug usually set to 'False' but is set to 'True' for testing purposes~
 debug = True
