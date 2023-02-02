@@ -60,8 +60,27 @@ class UnoMain:
         self.discard_pile = DiscardPile()
         self.current_player = 0
         self.direction = 1
+        self.skip = False
+        self.draw_count = 0 #will change this so i'll draw out directly from deck, but this makes it easier to test
+        self.choose_color = None
 
-        
+    def choose_color(self, player):
+        print(f"{player.name}, choose a color (Red, Yellow, Green, Blue): ")
+        color = input().strip()
+        while color not in cardColors:
+            print("Invalid color, choose a valid color (Red, Yellow, Green, Blue): ")
+            color = input().strip()
+        self.choose_color = color
+    
+    def play_card(self, player, card):
+        self.discard_pile.add_to_pile(card)
+        if card[0] == "Skip":
+            self.skip = True
+        elif card[0] == "Reverse":
+            self.direction *= -1
+        elif card[0] == "Draw Two":
+            self.draw_count = 2
+        #I'll complete later, going out
 
 # Create a list of players
 players = [Player("Player 1"), Player("Player 2"), Player("Player 3"), Player("Player 4")]
