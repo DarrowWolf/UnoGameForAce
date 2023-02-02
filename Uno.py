@@ -85,8 +85,8 @@ class UnoMain:
         player.hand.remove(card)
         if self.draw_count:
             next_player = self.players[(self.players.index(player) + self.direction) % len(self.players)]
-            next_player.draw_card(self.deck)
-            next_player.draw_card(self.deck)
+            next_player.draw_card(deck)
+            next_player.draw_card(deck)
             self.draw_count -= 1
         if self.skip:
             self.skip = False
@@ -116,7 +116,7 @@ while True:
         print("The discard pile is empty.")
     print(f"Enter the index of the card you want to play:")
     print("\tIf you pick 0 it will play your first card. if you pick 1 it will play your second card")
-    index = int(input().strip()) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. or draw cards.. reverse works :D
+    index = int(input().strip()) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. reverse works :D
     card = player.hand[index]
     game.play_card(player, card)
     if len(player.hand) == 0:
