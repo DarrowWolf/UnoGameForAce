@@ -100,6 +100,29 @@ players = [Player("Player 1"), Player("Player 2"), Player("Player 3"), Player("P
 
 # Create a deck of cards
 deck = Deck.create_deck()
+deck = Deck.shuffle_deck(deck)
+players = Deck.deal_cards(deck, players)
+
+game = UnoMain(players)
+
+# Main game loop
+while True:
+    player = game.players[game.current_player]
+    print(f"{player.name}'s turn")
+    print(f"Your hand: {player.hand}")
+    if game.discard_pile.pile:
+        print(f"Top card: {game.discard_pile.pile[-1]}")
+    else:
+        print("The discard pile is empty.")
+    print(f"Enter the index of the card you want to play:")
+    print("\tIf you pick 0 it will play your first card. if you pick 1 it will play your second card")
+    index = int(input().strip()) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. or draw cards.. reverse works :D
+    card = player.hand[index]
+    game.play_card(player, card)
+    if len(player.hand) == 0:
+        print(f"{player.name} has won the game!")
+        break
+
 
 class TestChecks:
     @staticmethod
@@ -138,8 +161,6 @@ class TestChecks:
             print("\tPASSED")
         else:
             print("\tFAILED")
-
-        
 
     @staticmethod
     def test_deck_create_deck():
@@ -185,7 +206,7 @@ class TestChecks:
 
 
 #Debug usually set to 'False' but is set to 'True' for testing purposes~
-debug = True
+debug = False
 if debug:
     
     TestChecks.run_tests()
