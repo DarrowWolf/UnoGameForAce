@@ -7,15 +7,18 @@ cardVal = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Skip', 'Reverse', 
 cardColors = ['Red', 'Yellow', 'Green', 'Blue']
 
 class Deck:
+
     # makes a deck of cards
     @staticmethod
     def create_deck():
         deck = []
         for i in cardColors:
             for j in cardVal:
-                deck.append((j,i))
+                if j not in ['Wild', 'Wild Draw Four']:
+                    deck.append((j,i))
+                else:
+                    deck.append((j, None))
         return deck
-
 
     # Create a function to shuffle the cards
     @staticmethod
@@ -61,8 +64,7 @@ class UnoMain:
         self.current_player = 0
         self.direction = 1 
         self.skip = False
-        self.draw_count = 0 #will change this so i'll draw out directly from deck, but this makes it easier to test
-        self.choose_color = None
+        self.draw_count = 0 
 
     def choose_color(self, player):
         print(f"{player.name}, choose a color (Red, Yellow, Green, Blue): ")
@@ -71,7 +73,7 @@ class UnoMain:
             print("Invalid color, choose a valid color (Red, Yellow, Green, Blue): ")
             color = input().strip()
         self.choose_color = color
-    
+
     def play_card(self, player, card):
         self.discard_pile.add_to_pile(card)
         if card[0] == "Skip":
@@ -80,19 +82,21 @@ class UnoMain:
             self.direction *= -1
         elif card[0] == "Draw Two":
             self.draw_count = 2
-        elif card[0] in ["Wild", "Wild Draw Four"]:
+        elif card[0] in ["Wild"]:
             self.choose_color(player)
+        elif card[0] in [ "Wild Draw Four"]:
+            self.choose_color(player)
+            self.draw_count = 4
         player.hand.remove(card)
         if self.draw_count:
             next_player = self.players[(self.players.index(player) + self.direction) % len(self.players)]
-            next_player.draw_card(deck)
-            next_player.draw_card(deck)
-            self.draw_count -= 1
+            for i in range(self.draw_count):
+                next_player.draw_card(deck)
+            self.draw_count = 0
         if self.skip:
             self.skip = False
         else:
             self.current_player = (self.players.index(player) + self.direction) % len(self.players)
-
 
 
 # Create a list of players
@@ -102,7 +106,6 @@ players = [Player("Player 1"), Player("Player 2"), Player("Player 3"), Player("P
 deck = Deck.create_deck()
 deck = Deck.shuffle_deck(deck)
 players = Deck.deal_cards(deck, players)
-
 game = UnoMain(players)
 
 # Main game loop
