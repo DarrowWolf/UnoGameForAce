@@ -20,6 +20,9 @@ class Deck:
                     deck.append((j, None))
         return deck
 
+
+
+
     # Create a function to shuffle the cards
     @staticmethod
     def shuffle_deck(deck):
@@ -74,20 +77,59 @@ class UnoMain:
             color = input().strip()
         self.choose_color = color
 
+    def draw(self, player):
+        card = deck.pop()
+        player.hand.append(card)
+        print(f"{player.name} drew a card")
+        return card
+
+    def card_legality(self, card):
+        if len(self.discard_pile.pile) == 0:
+            return True
+        if not self.discard_pile.pile:
+            return False
+        top_card = self.discard_pile.pile[-1]
+        if top_card[1] is None:
+            # Wild card is on top, so any card can be played
+            return True
+        if card[1] == top_card[1] or card[0] == top_card[0]:
+            # Card color or value matches top card
+            return True
+        if card[0] in ['Wild', 'Wild Draw Four']:
+            # Wild card can be played at any time
+            return True
+
+        return False
+
     def play_card(self, player, card):
+
+        
+
+        if self.card_legality(card):
+            self.discard_pile.add_to_pile(card)
+        else:
+            print("Illegal move, please play another card!")
+            return
+
+        if card[0] in ["Wild", "Wild Draw Four"]:
+            self.choose_color(player)
+            if card[0] == "Wild":
+                card = (card[0], self.choose_color)
+                print(card)
+            else:
+                card = (card[0], self.choose_color)
+
         self.discard_pile.add_to_pile(card)
+
         if card[0] == "Skip":
             self.skip = True
         elif card[0] == "Reverse":
             self.direction *= -1
         elif card[0] == "Draw Two":
             self.draw_count = 2
-        elif card[0] in ["Wild"]:
-            self.choose_color(player)
-        elif card[0] in [ "Wild Draw Four"]:
-            self.choose_color(player)
+        elif card[0] in ["Wild Draw Four"]:
             self.draw_count = 4
-        player.hand.remove(card)
+
         if self.draw_count:
             next_player = self.players[(self.players.index(player) + self.direction) % len(self.players)]
             for i in range(self.draw_count):
@@ -98,6 +140,7 @@ class UnoMain:
         else:
             self.current_player = (self.players.index(player) + self.direction) % len(self.players)
 
+            
 
 # Create a list of players
 players = [Player("Player 1"), Player("Player 2"), Player("Player 3"), Player("Player 4")]
@@ -113,18 +156,28 @@ while True:
     player = game.players[game.current_player]
     print(f"{player.name}'s turn")
     print(f"Your hand: {player.hand}")
+    print(f"If you want to draw a card type 'Draw'")
     if game.discard_pile.pile:
         print(f"Top card: {game.discard_pile.pile[-1]}")
     else:
         print("The discard pile is empty.")
     print(f"Enter the index of the card you want to play:")
     print("\tIf you pick 0 it will play your first card. if you pick 1 it will play your second card")
-    index = int(input().strip()) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. reverse works :D
-    card = player.hand[index]
-    game.play_card(player, card)
-    if len(player.hand) == 0:
-        print(f"{player.name} has won the game!")
-        break
+    input_str = input().strip()
+    if input_str.lower() == "draw":
+        game.draw(player)
+        continue
+    try:
+        index = int(input().strip()) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. reverse works :D 
+        card = player.hand[index]
+        game.play_card(player, card)
+        if len(player.hand) == 0:
+            print(f"{player.name} has won the game!")
+            break
+    except ValueError:
+        print("Please enter a valid integer.")
+    except IndexError:
+        print("Please enter an index within the range of your hand.")
 
 
 class TestChecks:
