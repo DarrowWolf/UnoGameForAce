@@ -166,6 +166,10 @@ while True:
     input_str = input().strip()
     if input_str.lower() == "draw":
         game.draw(player)
+    if input_str.lower() == "bark at me":
+        print("\n\n")
+        print("\nWoof! Woof! Awrf! Woof!")
+        print("\n\n")
         continue
     try:
         index = int(input().strip()) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. reverse works :D 
