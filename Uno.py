@@ -172,7 +172,7 @@ while True:
         print("\n\n")
         continue
     try:
-        index = int(input().strip()) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. reverse works :D 
+        index = int(input_str) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. reverse works :D 
         card = player.hand[index]
         game.play_card(player, card)
         if len(player.hand) == 0:
