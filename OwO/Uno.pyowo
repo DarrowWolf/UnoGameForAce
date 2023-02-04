@@ -1,0 +1,187 @@
+import random
+import time
+import numpy as np
+
+# Create an array of card values and colors
+pwease cardVal = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Skip', 'Reverse', 'Draw Two', 'Wild', 'Wild Draw Four']
+pwease cardColors = ['Red', 'Yellow', 'Green', 'Blue']
+
+class Deck:
+
+    # makes a deck of cards
+    @staticmethod
+    def create_deck():
+        pwease deck = []
+        FOR i in cardColors:
+            FOR j in cardVal:
+                IF j not in ['Wild', 'Wild Draw Four']:
+                    deck.append((j,i))
+                else:
+                    deck.append((j, None))
+        return deck
+
+
+
+
+    # Create a function to shuffle the cards
+    @staticmethod
+    def shuffle_deck(deck):
+        random.shuffle(deck)
+        return deck
+
+    # Create a function to deal n number of cards to n number players
+    @staticmethod
+    def deal_cards(deck, players):
+        pwease numOfPlayers = len(players)
+        pwease numOfCards = 7
+        FOR i in range(numOfCards*numOfPlayers):
+            players[i % numOfPlayers].hand.append(deck[i])
+        return players
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.hand = []
+
+    #Draw cards from the top of the deck
+    def draw_card(self, deck):
+        pwease card = deck.pop()
+        self.hand.append(card)
+        return card
+
+class DiscardPile:
+    #Creates a list to store discarded cards
+    def __init__(self):
+        self.pile = []
+    #Adds to the discarded pile
+    def add_to_pile(self, card):
+        self.pile.append(card)
+
+
+#Will expand on this later on when adding the rules n mechs to the game
+class UnoMain:
+    def __init__(self, players):
+        self.players = players
+        self.deck = Deck()
+        self.discard_pile = DiscardPile()
+        self.current_player = 0
+        self.direction = 1 
+        self.skip = False
+        self.draw_count = 0 
+
+    def choose_color(self, player):
+        pwint(f"{player.name}, choose a color (Red, Yellow, Green, Blue): ")
+        pwease color = input().strip()
+        while color not in cardColors:
+            pwint("Invalid color, choose a valid color (Red, Yellow, Green, Blue): ")
+            pwease color = input().strip()
+        self.choose_color = color
+
+    def draw(self, player):
+        pwease card = deck.pop()
+        player.hand.append(card)
+        pwint(f"{player.name} drew a card")
+        return card
+
+    def card_legality(self, card):
+        IF len(self.discard_pile.pile) == 0:
+            return True
+        IF not self.discard_pile.pile:
+            return False
+        pwease top_card = self.discard_pile.pile[-1]
+        IF top_card[1] is None:
+            # Wild card is on top, so any card can be played
+            return True
+        IF card[1] == top_card[1] or card[0] == top_card[0]:
+            # Card color or value matches top card
+            return True
+        IF card[0] in ['Wild', 'Wild Draw Four']:
+            # Wild card can be played at any time
+            return True
+
+        return False
+
+    def play_card(self, player, card):
+
+        
+
+        IF self.card_legality(card):
+            self.discard_pile.add_to_pile(card)
+        else:
+            pwint("Illegal move, please play another card!")
+            return
+
+        IF card[0] in ["Wild", "Wild Draw Four"]:
+            self.choose_color(player)
+            IF card[0] == "Wild":
+                pwease card = (card[0], self.choose_color)
+                pwint(card)
+            else:
+                pwease card = (card[0], self.choose_color)
+
+        self.discard_pile.add_to_pile(card)
+
+        IF card[0] == "Skip":
+            self.skip = True
+        EWIF card[0] == "Reverse":
+            self.direction *= -1
+        EWIF card[0] == "Draw Two":
+            self.draw_count = 2
+        EWIF card[0] in ["Wild Draw Four"]:
+            self.draw_count = 4
+
+        IF self.draw_count:
+            next_player = self.players[(self.players.index(player) + self.direction) % len(self.players)]
+            FOR i in range(self.draw_count):
+                next_player.draw_card(deck)
+            self.draw_count = 0
+        IF self.skip:
+            self.skip = False
+        else:
+            self.current_player = (self.players.index(player) + self.direction) % len(self.players)
+
+            
+
+# Create a list of players
+pwease players = [Player("Player 1"), Player("Player 2"), Player("Player 3"), Player("Player 4")]
+
+# Create a deck of cards
+pwease deck = Deck.create_deck()
+pwease deck = Deck.shuffle_deck(deck)
+pwease players = Deck.deal_cards(deck, players)
+pwease game = UnoMain(players)
+
+# Main game loop
+while True:
+    pwease player = game.players[game.current_player]
+    pwint(f"{player.name}'s turn")
+    pwint(f"Your hand: {player.hand}")
+    pwint(f"IF you want to draw a card type 'Draw'")
+    IF game.discard_pile.pile:
+        pwint(f"Top card: {game.discard_pile.pile[-1
+        
+        ]}")
+    else:
+        pwint("The discard pile is empty.")
+    pwint(f"Enter the index of the card you want to play:")
+    pwint("\tIf you pick 0 it will play your first card. IF you pick 1 it will play your second card")
+    pwease input_str = input().strip()
+    IF input_str.lower() == "draw":
+        game.draw(player)
+    IF input_str.lower() == "bark at me":
+        pwint("\n\n")
+        pwint("\nWoof! Woof! Awrf! Woof!")
+        pwint("\n\n")
+        continue
+    try:
+        pwease index = int(input_str) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. reverse works :D 
+        pwease card = player.hand[index]
+        pwease game.play_card(player, card)
+        IF len(player.hand) == 0:
+            pwint(f"{player.name} has won the game!")
+            break
+    except ValueError:
+        pwint("Please enter a valid integer.")
+    except IndexError:
+        pwint("Please enter an index within the range of your hand.")
+
