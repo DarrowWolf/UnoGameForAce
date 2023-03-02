@@ -70,6 +70,9 @@ class UnoMain:
         self.draw_count = 0
 
 
+        starting_card = deck.pop()
+        self.discard_pile.add_to_pile(starting_card)
+
     def choose_color(self, player):
         print(f"{player.name}, choose a color (Red, Yellow, Green, Blue): ")
         color = input().strip()
@@ -147,36 +150,45 @@ game = UnoMain(players)
 
 # Main game loop
 while True:
-    player = game.players[game.current_player]
-    print(f"{player.name}'s turn")
-    print(f"Your hand: {player.hand}")
-    print(f"If you want to draw a card type 'Draw'")
-    if game.discard_pile.pile:
-        print(f"Top card: {game.discard_pile.pile[-1]}")
-    else:
-        print("The discard pile is empty.")
-    print(f"Enter the index of the card you want to play:")
-    print("\tIf you pick 0 it will play your first card. if you pick 1 it will play your second card")
-    input_str = input().strip()
-    if input_str.lower() == "draw":
-        game.draw(player)
-    if input_str.lower() == "bark at me":
-        print("\n\n")
-        print("\nWoof! Woof! Awrf! Woof!")
-        print("\n\n")
-        continue
-    try:
-        index = int(input_str) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. reverse works :D 
-        card = player.hand[index]
-        game.play_card(player, card)
-        if len(player.hand) == 0:
-            print(f"{player.name} has won the game!")
+    restartGame = False
+    while True:
+        player = game.players[game.current_player]
+        print(f"{player.name}'s turn")
+        print(f"Your hand: {player.hand}")
+        print(f"If you want to draw a card type 'Draw'")
+        if game.discard_pile.pile:
+            print(f"Top card: {game.discard_pile.pile[-1]}")
+        else:
+            print("The discard pile is empty.")
+        print(f"Enter the index of the card you want to play:")
+        print("\tIf you pick 0 it will play your first card. if you pick 1 it will play your second card")
+        input_str = input().strip()
+        if input_str.lower() == "draw":
+            game.draw(player)
+        if input_str.lower() == "bark at me":
+            print("\n\n")
+            print("\nWoof! Woof! Awrf! Woof!")
+            print("\n\n")
+            continue
+        if input_str.lower() == "rage quit":
             break
-    except ValueError:
-        print("Please enter a valid integer.")
-    except IndexError:
-        print("Please enter an index within the range of your hand.")
-
+        if input_str.lower() == "restart":
+            restartGame = True
+            break
+        try:
+            index = int(input_str) #0 is your first card, 1 is your second card and so on. try avoiding picking wild cards.. reverse works :D 
+            card = player.hand[index]
+            game.play_card(player, card)
+            if len(player.hand) == 0:
+                print(f"{player.name} has won the game!")
+                restartGame = True
+                break
+        except ValueError:
+            print("Please enter a valid integer.")
+        except IndexError:
+            print("Please enter an index within the range of your hand.")
+    if restartGame == False:
+        break
 
 class TestChecks:
     @staticmethod
