@@ -67,7 +67,8 @@ class UnoMain:
         self.current_player = 0
         self.direction = 1 
         self.skip = False
-        self.draw_count = 0 
+        self.draw_count = 0
+
 
     def choose_color(self, player):
         print(f"{player.name}, choose a color (Red, Yellow, Green, Blue): ")
@@ -75,8 +76,8 @@ class UnoMain:
         while color not in cardColors:
             print("Invalid color, choose a valid color (Red, Yellow, Green, Blue): ")
             color = input().strip()
-        self.choose_color = color
-
+        return color
+    
     def draw(self, player):
         card = deck.pop()
         player.hand.append(card)
@@ -102,9 +103,6 @@ class UnoMain:
         return False
 
     def play_card(self, player, card):
-
-        
-
         if self.card_legality(card):
             self.discard_pile.add_to_pile(card)
         else:
@@ -112,12 +110,8 @@ class UnoMain:
             return
 
         if card[0] in ["Wild", "Wild Draw Four"]:
-            self.choose_color(player)
-            if card[0] == "Wild":
-                card = (card[0], self.choose_color)
-                print(card)
-            else:
-                card = (card[0], self.choose_color)
+            color = self.choose_color(player)
+            card = (card[0], color)
 
         self.discard_pile.add_to_pile(card)
 
