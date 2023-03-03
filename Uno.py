@@ -107,6 +107,7 @@ class UnoMain:
 
     def play_card(self, player, card):
         if self.card_legality(card):
+            player.hand.remove(card)
             self.discard_pile.add_to_pile(card)
         else:
             print("Illegal move, please play another card!")
@@ -134,8 +135,9 @@ class UnoMain:
             self.draw_count = 0
         if self.skip:
             self.skip = False
+            self.current_player = (self.current_player + 2*self.direction) % len(self.players)
         else:
-            self.current_player = (self.players.index(player) + self.direction) % len(self.players)
+            self.current_player = (self.current_player + self.direction) % len(self.players)
 
             
 
