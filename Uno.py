@@ -3,8 +3,9 @@ import time
 import numpy as np
 
 # Create an array of card values and colors
-cardVal = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Skip', 'Reverse', 'Draw Two', 'Wild', 'Wild Draw Four']
+cardVal = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '🚫', '🔄', '+2', '🎨', '🎨+4']
 cardColors = ['Red', 'Yellow', 'Green', 'Blue']
+
 
 class Deck:
 
@@ -14,7 +15,7 @@ class Deck:
         deck = []
         for i in cardColors:
             for j in cardVal:
-                if j not in ['Wild', 'Wild Draw Four']:
+                if j not in ['🎨', '🎨+4']:
                     deck.append((j,i))
                 else:
                     deck.append((j, None))
@@ -37,11 +38,16 @@ class Deck:
         for i in range(numOfCards*numOfPlayers):
             players[i % numOfPlayers].hand.append(deck[i])
         return players
+    
 
 class Player:
     def __init__(self, name):
         self.name = name
         self.hand = []
+    def print_hand(self):
+        print("Your hand:")
+        for i, card in enumerate(self.hand):
+            print(f"[{i}] {card[1]} [{card[0]}]")
 
     #Draw cards from the top of the deck
     def draw_card(self, deck):
@@ -70,7 +76,9 @@ class UnoMain:
         self.draw_count = 0
 
 
-        starting_card = deck.pop()
+        starting_card = None
+        while starting_card is None or starting_card[0] in ['🎨', '🎨+4', '🚫', '🔄', '+2']:
+            starting_card = deck.pop()
         self.discard_pile.add_to_pile(starting_card)
 
     def choose_color(self, player):
@@ -99,7 +107,7 @@ class UnoMain:
         if card[1] == top_card[1] or card[0] == top_card[0]:
             # Card color or value matches top card
             return True
-        if card[0] in ['Wild', 'Wild Draw Four']:
+        if card[0] in ['🎨', '🎨+4']:
             # Wild card can be played at any time
             return True
 
@@ -107,25 +115,24 @@ class UnoMain:
 
     def play_card(self, player, card):
         if self.card_legality(card):
-            player.hand.remove(card)
             self.discard_pile.add_to_pile(card)
         else:
             print("Illegal move, please play another card!")
             return
 
-        if card[0] in ["Wild", "Wild Draw Four"]:
+        if card[0] in ["🎨", "🎨+4"]:
             color = self.choose_color(player)
             card = (card[0], color)
 
         self.discard_pile.add_to_pile(card)
 
-        if card[0] == "Skip":
+        if card[0] == "🚫":
             self.skip = True
-        elif card[0] == "Reverse":
+        elif card[0] == "🔄":
             self.direction *= -1
-        elif card[0] == "Draw Two":
+        elif card[0] == "+2":
             self.draw_count = 2
-        elif card[0] in ["Wild Draw Four"]:
+        elif card[0] in ["🎨+4"]:
             self.draw_count = 4
 
         if self.draw_count:
@@ -135,33 +142,34 @@ class UnoMain:
             self.draw_count = 0
         if self.skip:
             self.skip = False
-            self.current_player = (self.current_player + 2*self.direction) % len(self.players)
         else:
-            self.current_player = (self.current_player + self.direction) % len(self.players)
+            self.current_player = (self.players.index(player) + self.direction) % len(self.players)
+
+
 
             
 
 # Create a list of players
 players = [Player("Player 1"), Player("Player 2"), Player("Player 3"), Player("Player 4")]
 
-# Create a deck of cards
-deck = Deck.create_deck()
-deck = Deck.shuffle_deck(deck)
-players = Deck.deal_cards(deck, players)
-game = UnoMain(players)
+
 
 # Main game loop
 while True:
+    # Create a deck of cards
+    deck = Deck.create_deck()
+    deck = Deck.shuffle_deck(deck)
+    players = Deck.deal_cards(deck, players)
+    game = UnoMain(players)
+    
     restartGame = False
     while True:
         player = game.players[game.current_player]
         print(f"{player.name}'s turn")
-        print(f"Your hand: {player.hand}")
+        player.print_hand()
         print(f"If you want to draw a card type 'Draw'")
         if game.discard_pile.pile:
             print(f"Top card: {game.discard_pile.pile[-1]}")
-        else:
-            print("The discard pile is empty.")
         print(f"Enter the index of the card you want to play:")
         print("\tIf you pick 0 it will play your first card. if you pick 1 it will play your second card")
         input_str = input().strip()
@@ -172,7 +180,7 @@ while True:
             print("\nWoof! Woof! Awrf! Woof!")
             print("\n\n")
             continue
-        if input_str.lower() == "rage quit":
+        if input_str.lower() == "quit":
             break
         if input_str.lower() == "restart":
             restartGame = True
@@ -191,6 +199,9 @@ while True:
             print("Please enter an index within the range of your hand.")
     if restartGame == False:
         break
+    else:
+        for player in game.players:
+            player.hand = [] # resetting players' hands
 
 class TestChecks:
     @staticmethod
