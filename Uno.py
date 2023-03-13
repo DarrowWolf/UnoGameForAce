@@ -1,6 +1,7 @@
 import random
 import time
 import numpy as np
+import socket
 
 # Create an array of card values and colors
 cardVal = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '🚫', '🔄', '+2', '🎨', '🎨+4']
@@ -163,6 +164,26 @@ while True:
     deck = Deck.shuffle_deck(deck)
     players = Deck.deal_cards(deck, players)
     game = UnoMain(players)
+    host_choice = input("Do you want to host a game? (y/n): ").upper()
+    if host_choice == 'Y':
+    # Host a game
+        host_ip = socket.gethostbyname(socket.gethostname())
+        print("Your IP address is:", host_ip)
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.bind((host_ip, 12345))
+        server_socket.listen(1)
+        print("Waiting for a player to join...")
+        client_socket, address = server_socket.accept()
+        print(f"{players} has joined the game.")
+        players = Player("Player 1")
+
+    else:
+        # Join a game
+        host_ip = input("Enter the IP address of the host: ")
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((host_ip, 12345))
+        print("Connected to the host.")
+        players = Player("Player 2")
     
     restartGame = False
     while True:
